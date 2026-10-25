@@ -1,10 +1,12 @@
-import "./styles.css"
+import "./styles.css";
+import dayImg from "./assets/day.jpg";
+import nightImg from "./assets/night.jpg";
 
 const content = document.getElementById("content");
 const search = document.getElementById("search");
 
 const API_KEY = "MZHNN4ZKXKWDKKFJVAQRUUST3";
-let location = "Denton TX"
+let location = "Denton, TX"
 
 async function getWeather(location) {
     const query = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=us&include=current&key=${API_KEY}&contentType=json`;
@@ -16,7 +18,9 @@ async function getWeather(location) {
 function displayGreeting(data) {
     let greeting = "";
     const greetingContainer = document.createElement("div");
+    greetingContainer.classList.add("greeting");
     const greetingDiv = document.createElement("p");
+    greetingDiv.classList.add("greeting-time")
 
     const time = data.currentConditions.datetime;
     const sunrise = data.currentConditions.sunrise;
@@ -38,12 +42,16 @@ function displayGreeting(data) {
 
     if (timeInSeconds < sunriseInSeconds) {
         greeting += "Up Late?";
+        document.body.style.backgroundImage = `url(${nightImg})`
     } else if (timeInSeconds >= sunriseInSeconds && timeInSeconds < NOON) {
         greeting += "Good morning";
+        document.body.style.backgroundImage = `url(${dayImg})`
     }   else if (timeInSeconds >= NOON && timeInSeconds < sunsetInSeconds) {
         greeting += "Good afternoon";
+        document.body.style.backgroundImage = `url(${dayImg})`
     } else {
         greeting += "Good evening";
+        document.body.style.backgroundImage = `url(${nightImg})`
     }
     if (greeting.at(-1) !== "?") greeting += ",";
 
@@ -51,10 +59,12 @@ function displayGreeting(data) {
     
 
     const greetingLocation = document.createElement("p");
-    greetingLocation.textContent = `The temperature in ${data.address} is:`;
+    greetingLocation.classList.add("greeting-location");
+    greetingLocation.textContent = `${data.address}`;
 
     greetingContainer.append(greetingDiv, greetingLocation);
     content.append(greetingContainer)
+
 }
 
 function displayWeather(data) {
@@ -106,6 +116,7 @@ search.addEventListener("keydown", async (event) => {
 })
 
 const data = await getWeather(location);
+displayGreeting(data)
 displayWeather(data);
 console.log(data)
 

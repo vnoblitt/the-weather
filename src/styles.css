@@ -1,23 +1,54 @@
 /* styles.css */
 body {
-    background-color: aqua;
     font-family: 'Noto Sans', sans-serif;
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    color: white;
 }
 
 #search {
+    display: flex;
+    padding-inline: 1rem;
+    border-radius: 8px;
+    width: 10rem;
+    height: 2rem;
+    font-size: 16px;
+    justify-self: end;
+    margin: 1rem;
     background: rgba(255, 255, 255, 0.2);
     border: none;
     outline: none;
+    color: white;
+}
+
+#search::placeholder {
+    color: white;
+}
+
+.greeting {
+    margin-inline: 1rem;
+    font-size: 32px;
+}
+
+.greeting-time {
+    font-size: 32px;
+    font-family: "Changa One", sans-serif;
+}
+
+.greeting-location {
+    font-size: 20px;
 }
 
 .container { 
     display: flex;
     gap: 3rem;
+    margin-inline: 1rem;
 }
 
 .main-info { 
     padding-right: 2rem;
-    border-right: 2px solid black;
+    border-right: 2px solid white;
 }
 
 .secondary-info {

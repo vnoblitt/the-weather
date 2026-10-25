@@ -1,1 +1,51 @@
 /* styles.css */
+body {
+    background-color: aqua;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+#search {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    outline: none;
+}
+
+.container { 
+    display: flex;
+    gap: 3rem;
+}
+
+.main-info { 
+    padding-right: 2rem;
+    border-right: 2px solid black;
+}
+
+.secondary-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.current-temp {
+    font-size: 100px;
+}
+
+.degrees::after { 
+    content: '\00B0 F';
+    font-size: .75em ;
+    vertical-align: super;
+}
+
+.current-temp.degrees::after {
+    font-size: .3em;
+    vertical-align: 1.75em;
+}
+
+.percent::after {
+    content: '%';
+}
+
+.speed::after {
+    content: ' MPH';
+    font-size: .75rem ;
+}

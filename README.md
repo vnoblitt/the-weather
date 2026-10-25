@@ -1,2 +1,2 @@
-# restaurant-page
-Practicing DOM manipulation by dynamically rendering a restaurant homepage.
+# the weather
+A project to get familiar with await, async, and APIs.

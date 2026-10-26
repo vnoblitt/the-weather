@@ -11,11 +11,29 @@ let location = "Denton, TX"
 async function getWeather(location) {
     const query = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=us&include=current&key=${API_KEY}&contentType=json`;
     const response = await fetch(query);
+    if (!response.ok) throw new Error(`Location not found (${response.status})`);
     const data = await response.json();
     return data;
 }
 
-function displayGreeting(data) {
+async function showWeather(location) {
+    try {
+        const data = await getWeather(location);
+        const cleanedLocation = cleanLocation(data);
+        content.innerHTML = "";
+        displayGreeting(data, cleanedLocation);
+        displayWeather(data);
+    } catch (error) {
+        console.error(error);
+        content.innerHTML = "";
+        const message = document.createElement("p");
+        message.textContent = "Location not found";
+        message.classList.add("error");
+        content.append(message);
+    }
+}
+
+function displayGreeting(data, cleanedLocation) {
     let greeting = "";
     const greetingContainer = document.createElement("div");
     greetingContainer.classList.add("greeting");
@@ -37,9 +55,6 @@ function displayGreeting(data) {
 
     const NOON = 3600*12;
 
-    console.log(time, sunrise, sunset);
-    console.log(timeInSeconds, sunriseInSeconds, NOON, sunsetInSeconds)
-
     if (timeInSeconds < sunriseInSeconds) {
         greeting += "Up Late?";
         document.body.style.backgroundImage = `url(${nightImg})`
@@ -60,7 +75,7 @@ function displayGreeting(data) {
 
     const greetingLocation = document.createElement("p");
     greetingLocation.classList.add("greeting-location");
-    greetingLocation.textContent = `${data.address}`;
+    greetingLocation.textContent = `${cleanedLocation}`;
 
     greetingContainer.append(greetingDiv, greetingLocation);
     content.append(greetingContainer)
@@ -102,21 +117,37 @@ function displayWeather(data) {
     content.append(containerDiv);
 }
 
+function cleanLocation(data) {
+    /*const str = input.split(" ")
+    let newArr = []
+    for(let word of str) {
+        if (word.length == 2 && word != str[0]) {
+            newArr.push(word.toUpperCase());
+        } else {
+            const clean = word.charAt(0).toUpperCase() + word.toLowerCase().slice(1);
+            newArr.push(clean);
+        }
+    }
+    const cleanedLocation = newArr.join(", ");
+    return cleanedLocation;*/
+
+    const arr = data.resolvedAddress.split(",");
+    let cleanedArr = [];
+
+    for(let word of arr) {
+        console.log(word.trim())
+        if (word.trim() !== "United States") cleanedArr.push(word.trim());
+    }
+    return cleanedArr.join(", ");
+}
+
 search.addEventListener("keydown", async (event) => {
     if (event.key === "Enter") {
         location = search.value;
         search.value = "";
-        console.log(location)
-        const searchResults = await getWeather(location);
-        console.log(searchResults)
-        content.innerHTML = "";
-        displayGreeting(searchResults);
-        displayWeather(searchResults);
+        showWeather(location);
     }
 })
 
-const data = await getWeather(location);
-displayGreeting(data)
-displayWeather(data);
-console.log(data)
+showWeather(location)
 

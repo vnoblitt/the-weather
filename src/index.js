@@ -3,10 +3,13 @@ import dayImg from "./assets/day.jpg";
 import nightImg from "./assets/night.jpg";
 
 const content = document.getElementById("content");
+const mode = document.getElementById("mode");
 const search = document.getElementById("search");
 
 const API_KEY = "MZHNN4ZKXKWDKKFJVAQRUUST3";
-let location = "Denton, TX"
+let location = "Denton, TX";
+
+let showCelsius = true;
 
 async function getWeather(location) {
     const query = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${location}?unitGroup=us&include=current&key=${API_KEY}&contentType=json`;
@@ -19,6 +22,8 @@ async function getWeather(location) {
 async function showWeather(location) {
     try {
         const data = await getWeather(location);
+        // ---------------
+        console.log(data)
         const cleanedLocation = cleanLocation(data);
         content.innerHTML = "";
         displayGreeting(data, cleanedLocation);
@@ -83,8 +88,9 @@ function displayGreeting(data, cleanedLocation) {
 }
 
 function displayWeather(data) {
-    const temp = data.currentConditions.temp;
-    const feelsLike = data.currentConditions.feelslike;
+    const current = data.currentConditions;
+    const temp = showCelsius ? convertToCelsius(current.temp) : current.temp;
+    const feelsLike = showCelsius ? convertToCelsius(current.feelslike) : current.feelslike;
     const humidity = data.currentConditions.humidity;
     const wind = data.currentConditions.windspeed;
     
@@ -96,11 +102,13 @@ function displayWeather(data) {
     secondaryInfo.classList.add("secondary-info");
 
     const tempDiv = document.createElement("div");
-    tempDiv.classList.add("degrees", "current-temp");
+    if(showCelsius) tempDiv.classList.add("degrees-c", "current-temp");
+    else tempDiv.classList.add("degrees-f", "current-temp");
     tempDiv.textContent = `${temp}`;
 
     const feelsLikeDiv = document.createElement("div");
-    feelsLikeDiv.classList.add("degrees");
+    if (showCelsius) feelsLikeDiv.classList.add("degrees-c");
+    else feelsLikeDiv.classList.add("degrees-f");
     feelsLikeDiv.textContent = `Feels Like: ${feelsLike}`;
 
     const humidityDiv = document.createElement("div");
@@ -118,27 +126,17 @@ function displayWeather(data) {
 }
 
 function cleanLocation(data) {
-    /*const str = input.split(" ")
-    let newArr = []
-    for(let word of str) {
-        if (word.length == 2 && word != str[0]) {
-            newArr.push(word.toUpperCase());
-        } else {
-            const clean = word.charAt(0).toUpperCase() + word.toLowerCase().slice(1);
-            newArr.push(clean);
-        }
-    }
-    const cleanedLocation = newArr.join(", ");
-    return cleanedLocation;*/
-
     const arr = data.resolvedAddress.split(",");
     let cleanedArr = [];
 
     for(let word of arr) {
-        console.log(word.trim())
         if (word.trim() !== "United States") cleanedArr.push(word.trim());
     }
     return cleanedArr.join(", ");
+}
+
+function convertToCelsius(f) {
+    return ((f - 32) * 5 / 9).toFixed(1)
 }
 
 search.addEventListener("keydown", async (event) => {
@@ -147,7 +145,13 @@ search.addEventListener("keydown", async (event) => {
         search.value = "";
         showWeather(location);
     }
+});
+
+mode.addEventListener("click", () => {
+    showCelsius = !showCelsius;
+    mode.textContent = showCelsius ? `C\u00B0` : `F\u00B0`;
+    showWeather(location);
 })
 
 showWeather(location)
-
+console.log(convertToCelsius(89))
